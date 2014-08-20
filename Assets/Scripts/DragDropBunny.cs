@@ -43,8 +43,12 @@ public class DragDropBunny : MonoBehaviour
             {
                 newBunny.transform.position = hits[0].collider.gameObject.transform.position;
 
-                //if we're hitting a path
-                if (hits.Where(x => x.collider.gameObject.tag == "Path" || x.collider.gameObject.tag == "Tower").Count() > 0)
+                //if we're hitting a path or tower
+                //or there is an existing bunny there
+                //we use > 1 since we're hovering over the newBunny gameobject :)
+                if (hits.Where(x => x.collider.gameObject.tag == "Path"
+                    || x.collider.gameObject.tag == "Tower").Count() > 0
+                    || hits.Where(x=>x.collider.gameObject.tag == "Bunny").Count() > 1)
                 {
                     //we cannot place a bunny on the path
                     GameObject backgroundBehindPath = hits.Where(x => x.collider.gameObject.tag == "Background").Single().collider.gameObject;
@@ -69,11 +73,14 @@ public class DragDropBunny : MonoBehaviour
             ResetTempBackgroundColor();
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             //8 is BunnyGenerator layer ID
-            RaycastHit2D hit = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity, ~(1 << 8));
-            if (hit.collider.gameObject.tag == "Background")
+            RaycastHit2D[] hits = Physics2D.RaycastAll(ray.origin, ray.direction, Mathf.Infinity, ~(1 << 8));
+            //in order to place it, we must have a background and no other bunnies
+            if (hits.Where(x=>x.collider.gameObject.tag == "Background").Count() > 0
+                && hits.Where(x=>x.collider.gameObject.tag == "Bunny").Count() == 1)
             {
                 GameManager.MoneyAvailable -= Constants.BunnyCost;
-                newBunny.transform.position = hit.collider.gameObject.transform.position;
+                newBunny.transform.position = hits.Where(x => x.collider.gameObject.tag == "Background")
+                    .First().collider.gameObject.transform.position;
                 newBunny.GetComponent<Bunny>().Activate();
             }
             else

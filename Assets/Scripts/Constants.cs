@@ -13,7 +13,8 @@ namespace Assets.Scripts
         public static readonly int BunnyCost = 50;
         public static readonly int CarrotAward = 10;
         public static readonly int InitialEnemyHealth = 50;
-        public static readonly int ArrowDamage = 25;
+        public static readonly int ArrowDamage = 15;
         public static readonly float MinDistanceForBunnyToShoot = 3f;
+        
     }
 }

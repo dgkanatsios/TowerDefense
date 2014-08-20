@@ -6,16 +6,26 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
+
+    //sprites can be found here: 
+    //http://www.gameartguppy.com/shop/top-tower-defense-bunny-badgers-game-art-set/
+
+    //enemies on screen
     public static List<GameObject> Enemies;
+    //prefabs
     public GameObject EnemyPrefab;
     public GameObject PathPrefab;
     public GameObject TowerPrefab;
+    //list of waypoints in the current level
     public static Transform[] Waypoints;
     private GameObject PathPiecesParent;
     private GameObject WaypointsParent;
-    private LevelStuffFromXML levelStuff;
+    //file pulled from resources
+    private LevelStuffFromXML levelStuffFromXML;
+    //will spawn carrots on screen
     public CarrotSpawner CarrotSpawner;
 
+    //helpful variables for our player
     public static int MoneyAvailable;
     public static float MinCarrotSpawnTime, MaxCarrotSpawnTime;
     public static int Lives = 10;
@@ -35,7 +45,7 @@ public class GameManager : MonoBehaviour
         Enemies = new List<GameObject>();
         PathPiecesParent = GameObject.Find("PathPieces");
         WaypointsParent = GameObject.Find("Waypoints");
-        levelStuff = Utilities.ReadXMLFile();
+        levelStuffFromXML = Utilities.ReadXMLFile();
 
         CreateLevelFromXML();
 
@@ -44,37 +54,44 @@ public class GameManager : MonoBehaviour
         FinalEnemyRound = false;
     }
 
+    /// <summary>
+    /// Will create necessary stuff from the object that has the XML stuff
+    /// </summary>
     private void CreateLevelFromXML()
     {
-        foreach (var position in levelStuff.Paths)
+        foreach (var position in levelStuffFromXML.Paths)
         {
             GameObject go = Instantiate(PathPrefab, position, Quaternion.identity) as GameObject;
             go.GetComponent<SpriteRenderer>().sortingLayerName = "Path";
             go.transform.parent = PathPiecesParent.transform;
         }
 
-        for (int i = 0; i < levelStuff.Waypoints.Count; i++)
+        for (int i = 0; i < levelStuffFromXML.Waypoints.Count; i++)
         {
             GameObject go = new GameObject();
-            go.transform.position = levelStuff.Waypoints[i];
+            go.transform.position = levelStuffFromXML.Waypoints[i];
             go.transform.parent = WaypointsParent.transform;
             go.tag = "Waypoint";
             go.name = "Waypoints" + i.ToString();
         }
 
-        GameObject tower = Instantiate(TowerPrefab, levelStuff.Tower, Quaternion.identity) as GameObject;
+        GameObject tower = Instantiate(TowerPrefab, levelStuffFromXML.Tower, Quaternion.identity) as GameObject;
         tower.GetComponent<SpriteRenderer>().sortingLayerName = "Foreground";
 
         Waypoints = GameObject.FindGameObjectsWithTag("Waypoint")
             .OrderBy(x => x.name).Select(x => x.transform).ToArray();
 
-        MoneyAvailable = levelStuff.InitialMoney;
-        MinCarrotSpawnTime = levelStuff.MinCarrotSpawnTime;
-        MaxCarrotSpawnTime = levelStuff.MaxCarrotSpawnTime;
+        MoneyAvailable = levelStuffFromXML.InitialMoney;
+        MinCarrotSpawnTime = levelStuffFromXML.MinCarrotSpawnTime;
+        MaxCarrotSpawnTime = levelStuffFromXML.MaxCarrotSpawnTime;
     }
 
+    /// <summary>
+    /// Will make the arrow collide only with enemies!
+    /// </summary>
     private static void IgnoreLayerCollisions()
     {
+        Physics2D.IgnoreLayerCollision(12, 15); //Bunny and Enemy (when dragging the bunny)
         Physics2D.IgnoreLayerCollision(9, 8); //Arrow and BunnyGenerator
         Physics2D.IgnoreLayerCollision(9, 10); //Arrow and Background
         Physics2D.IgnoreLayerCollision(9, 11); //Arrow and Path
@@ -90,21 +107,21 @@ public class GameManager : MonoBehaviour
         while (true)
         {
             //before spawning, check if there are active enemies on screen
-            if (Enemies.Where(x => x != null).Count() > 0)
+            if (Enemies.Where(x => x != null).Count() > 0 && !FinalEnemyRound)
             {
                 //enemies exist, so wait for 2 seconds and check again
                 yield return new WaitForSeconds(2f);
                 continue;
             }
 
-            Round currentRound = levelStuff.Rounds[currentRoundIndex];
+            Round currentRound = levelStuffFromXML.Rounds[currentRoundIndex];
             for (int i = 0; i < currentRound.NoOfEnemies; i++)
             {
                 GameObject enemy = Instantiate(EnemyPrefab, Waypoints[0].position, Quaternion.identity) as GameObject;
                 Enemies.Add(enemy);
                 yield return new WaitForSeconds(1f);
             }
-            if (currentRoundIndex < levelStuff.Rounds.Count - 1)
+            if (currentRoundIndex < levelStuffFromXML.Rounds.Count - 1)
             {
                 currentRoundIndex++;
             }
@@ -137,12 +154,17 @@ public class GameManager : MonoBehaviour
                     CarrotSpawner.StopCarrotSpawn();
                     CurrentGameState = GameState.Lost;
                 }
-                break;
-            case GameState.Won:
-                if (FinalEnemyRound && Enemies.Where(x => x != null).Count() == 0)
+                else if (FinalEnemyRound && Enemies.Where(x => x != null).Count() == 0)
                 {
+                    DestroyExistingEnemiesAndCarrots();
                     CarrotSpawner.StopCarrotSpawn();
                     CurrentGameState = GameState.Won;
+                }
+                break;
+            case GameState.Won:
+                if (Input.GetMouseButtonUp(0))
+                {
+                    Application.LoadLevel(Application.loadedLevel);
                 }
                 break;
             case GameState.Lost:

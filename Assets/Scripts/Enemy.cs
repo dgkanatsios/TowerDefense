@@ -25,7 +25,7 @@ public class Enemy : MonoBehaviour
             //is this waypoint the last one?
             if (nextWaypointIndex == GameManager.Waypoints.Length - 1)
             {
-                Destroy(this.gameObject);
+                DestroyAndRemoveFromMemory();
                 GameManager.Lives--;
             }
             else
@@ -48,21 +48,22 @@ public class Enemy : MonoBehaviour
     void OnCollisionEnter2D(Collision2D col)
     {
         if (col.gameObject.tag == "Arrow")
-        {
-
+        {//if we're hit by an arrow
             if (Health > 0)
             {
-
-                Health -= 25;
-                Debug.Log("hit " + transform.GetInstanceID() + " health " + Health);
+                Health -= Constants.ArrowDamage; 
                 if (Health <= 0)
                 {
-                    
-                    //this.gameObject.SetActive(false);
-                    Destroy(this.gameObject);
+                    DestroyAndRemoveFromMemory();
                 }
             }
-            Destroy(col.gameObject);
+            Destroy(col.gameObject); //destroy the arrow
         }
+    }
+
+    void DestroyAndRemoveFromMemory()
+    {
+        Destroy(this.gameObject);
+        GameManager.Enemies.Remove(this.gameObject);
     }
 }

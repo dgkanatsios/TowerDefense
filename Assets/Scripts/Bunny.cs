@@ -91,7 +91,6 @@ public class Bunny : MonoBehaviour
             && Vector3.Distance(transform.position, targetedEnemy.transform.position)
                     < Constants.MinDistanceForBunnyToShoot)
         {
-            Debug.Log("instanceID " + targetedEnemy.transform.GetInstanceID() + " health " + targetedEnemy.GetComponent<Enemy>().Health);
             GameObject go =
                 Instantiate(ArrowPrefab, ArrowSpawnPosition.position, transform.rotation) as GameObject;
             go.GetComponent<Rigidbody2D>().AddForce(dir * 500);
