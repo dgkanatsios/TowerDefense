@@ -76,16 +76,16 @@
   </Waypoints>
   <Tower X="-7.37928" Y="4.42552137" />
   <Rounds>
-    <Round NoOfEnemies="1" />
-    <Round NoOfEnemies="1" />
     <Round NoOfEnemies="2" />
     <Round NoOfEnemies="2" />
-    <Round NoOfEnemies="3" />
-    <Round NoOfEnemies="3" />
     <Round NoOfEnemies="4" />
     <Round NoOfEnemies="4" />
-    <Round NoOfEnemies="5" />
     <Round NoOfEnemies="6" />
+    <Round NoOfEnemies="6" />
+    <Round NoOfEnemies="8" />
+    <Round NoOfEnemies="8" />
+    <Round NoOfEnemies="10" />
+    <Round NoOfEnemies="12" />
   </Rounds>
   <OtherStuff InitialMoney ="100" MinCarrotSpawnTime="3" MaxCarrotSpawnTime="5" />
 </Elements>

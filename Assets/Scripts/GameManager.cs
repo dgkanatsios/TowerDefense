@@ -89,17 +89,24 @@ public class GameManager : MonoBehaviour
     {
         while (true)
         {
+            //before spawning, check if there are active enemies on screen
+            if (Enemies.Where(x => x != null).Count() > 0)
+            {
+                //enemies exist, so wait for 2 seconds and check again
+                yield return new WaitForSeconds(2f);
+                continue;
+            }
+
             Round currentRound = levelStuff.Rounds[currentRoundIndex];
             for (int i = 0; i < currentRound.NoOfEnemies; i++)
             {
                 GameObject enemy = Instantiate(EnemyPrefab, Waypoints[0].position, Quaternion.identity) as GameObject;
                 Enemies.Add(enemy);
-                yield return new WaitForSeconds(0.5f);
+                yield return new WaitForSeconds(1f);
             }
             if (currentRoundIndex < levelStuff.Rounds.Count - 1)
             {
                 currentRoundIndex++;
-                yield return new WaitForSeconds(4f);
             }
             else
             {
@@ -169,11 +176,11 @@ public class GameManager : MonoBehaviour
         switch (CurrentGameState)
         {
             case GameState.Start:
-                guiText.text= "Tap to start!";
+                guiText.text = "Tap to start!";
                 break;
             case GameState.Playing:
                 guiText.text = "Money: " + MoneyAvailable.ToString() + "\n"
-                    + "Life: " + Lives.ToString();                
+                    + "Life: " + Lives.ToString();
                 break;
             case GameState.Won:
                 guiText.text = "Won :( Tap to restart!";
