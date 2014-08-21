@@ -25,17 +25,17 @@ public class Bunny : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (GameManager.FinalEnemyRound &&
-            GameManager.Enemies.Where(x => x != null).Count() == 0)
+        if (GameManager.Instance.FinalRound &&
+            GameManager.Instance.Enemies.Where(x => x != null).Count() == 0)
             State = BunnyState.Inactive;
 
         if (State == BunnyState.Searching)
         {
-            if (GameManager.Enemies.Where(x => x != null).Count() == 0) return;
+            if (GameManager.Instance.Enemies.Where(x => x != null).Count() == 0) return;
 
             //aggregate method proposed here
             //http://unitygems.com/linq-1-time-linq/
-            targetedEnemy = GameManager.Enemies.Where(x => x != null)
+            targetedEnemy = GameManager.Instance.Enemies.Where(x => x != null)
            .Aggregate((current, next) => Vector2.Distance(current.transform.position, transform.position)
                < Vector2.Distance(next.transform.position, transform.position)
               ? current : next);

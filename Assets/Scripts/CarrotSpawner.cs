@@ -30,7 +30,8 @@ public class CarrotSpawner : MonoBehaviour {
                 Quaternion.identity) as GameObject;
             carrot.GetComponent<Carrot>().FallSpeed = Random.Range(1f, 3f);
             yield return new WaitForSeconds
-                (Random.Range(GameManager.MinCarrotSpawnTime, GameManager.MaxCarrotSpawnTime));
+                (Random.Range(GameManager.Instance.MinCarrotSpawnTime, 
+                GameManager.Instance.MaxCarrotSpawnTime));
         }
     }
 	

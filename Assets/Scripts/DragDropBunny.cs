@@ -23,7 +23,8 @@ public class DragDropBunny : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetMouseButtonDown(0) && !isDragging && GameManager.MoneyAvailable >= Constants.BunnyCost)
+        if (Input.GetMouseButtonDown(0) && !isDragging &&
+            GameManager.Instance.MoneyAvailable >= Constants.BunnyCost)
         {
             ResetTempBackgroundColor();
             Vector2 location = mainCamera.ScreenToWorldPoint(Input.mousePosition);
@@ -80,7 +81,7 @@ public class DragDropBunny : MonoBehaviour
                 && hits.Where(x => x.collider.gameObject.tag == "Path").Count() == 0
                 && hits.Where(x=>x.collider.gameObject.tag == "Bunny").Count() == 1)
             {
-                GameManager.MoneyAvailable -= Constants.BunnyCost;
+                GameManager.Instance.AlterMoneyAvailable(-Constants.BunnyCost);
                 newBunny.transform.position = hits.Where(x => x.collider.gameObject.tag == "Background")
                     .First().collider.gameObject.transform.position;
                 newBunny.GetComponent<Bunny>().Activate();

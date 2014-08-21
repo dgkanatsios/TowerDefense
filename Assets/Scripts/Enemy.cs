@@ -23,13 +23,13 @@ public class Enemy : MonoBehaviour
 
         //calculate the distance between current position
         //and the target waypoint
-        if (Vector2.Distance(transform.position, GameManager.Waypoints[nextWaypointIndex].position) < 0.01f)
+        if (Vector2.Distance(transform.position, GameManager.Instance.Waypoints[nextWaypointIndex].position) < 0.01f)
         {
             //is this waypoint the last one?
-            if (nextWaypointIndex == GameManager.Waypoints.Length - 1)
+            if (nextWaypointIndex == GameManager.Instance.Waypoints.Length - 1)
             {
                 DestroyAndRemoveFromMemory();
-                GameManager.Lives--;
+                GameManager.Instance.Lives--;
             }
             else
             {
@@ -38,10 +38,10 @@ public class Enemy : MonoBehaviour
             }
         }
 
-        transform.LookAt(GameManager.Waypoints[nextWaypointIndex].position, -Vector3.forward);
+        transform.LookAt(GameManager.Instance.Waypoints[nextWaypointIndex].position, -Vector3.forward);
         transform.eulerAngles = new Vector3(0, 0, transform.eulerAngles.z);
 
-        transform.position = Vector2.MoveTowards(transform.position, GameManager.Waypoints[nextWaypointIndex].position,
+        transform.position = Vector2.MoveTowards(transform.position, GameManager.Instance.Waypoints[nextWaypointIndex].position,
             Time.deltaTime * Speed);
     }
 
@@ -67,7 +67,7 @@ public class Enemy : MonoBehaviour
     void DestroyAndRemoveFromMemory()
     {
         AudioManager.Instance.PlayDeathSound();
-        GameManager.Enemies.Remove(this.gameObject);
+        GameManager.Instance.Enemies.Remove(this.gameObject);
         Destroy(this.gameObject);
 
        

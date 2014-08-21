@@ -7,18 +7,25 @@ using System;
 
 public class GameManager : MonoBehaviour
 {
+    [HideInInspector]
+    public static GameManager Instance { get; private set; }
+
+    void Awake()
+    {
+        Instance = this;
+    }
 
     //sprites can be found here: 
     //http://www.gameartguppy.com/shop/top-tower-defense-bunny-badgers-game-art-set/
 
     //enemies on screen
-    public static List<GameObject> Enemies;
+    public List<GameObject> Enemies;
     //prefabs
     public GameObject EnemyPrefab;
     public GameObject PathPrefab;
     public GameObject TowerPrefab;
     //list of waypoints in the current level
-    public static Transform[] Waypoints;
+    public Transform[] Waypoints;
     private GameObject PathPiecesParent;
     private GameObject WaypointsParent;
     //file pulled from resources
@@ -27,13 +34,19 @@ public class GameManager : MonoBehaviour
     public CarrotSpawner CarrotSpawner;
 
     //helpful variables for our player
-    public static int MoneyAvailable;
-    public static float MinCarrotSpawnTime, MaxCarrotSpawnTime;
-    public static int Lives = 10;
+    [HideInInspector]
+    public int MoneyAvailable { get; private set; }
+    [HideInInspector]
+    public float MinCarrotSpawnTime;
+    [HideInInspector]
+    public float MaxCarrotSpawnTime;
+    public int Lives = 10;
     private int currentRoundIndex = 0;
-    public static GameState CurrentGameState;
-
-    public static bool FinalEnemyRound;
+    [HideInInspector]
+    public GameState CurrentGameState;
+    public SpriteRenderer BunnyGeneratorSprite;
+    [HideInInspector]
+    public bool FinalRound;
     public AudioManager audioManager;
     public GUIText infoText;
 
@@ -54,7 +67,7 @@ public class GameManager : MonoBehaviour
 
         CurrentGameState = GameState.Start;
 
-        FinalEnemyRound = false;
+        FinalRound = false;
     }
 
     /// <summary>
@@ -92,7 +105,7 @@ public class GameManager : MonoBehaviour
     /// <summary>
     /// Will make the arrow collide only with enemies!
     /// </summary>
-    private static void IgnoreLayerCollisions()
+    private void IgnoreLayerCollisions()
     {
         Physics2D.IgnoreLayerCollision(12, 15); //Bunny and Enemy (when dragging the bunny)
         Physics2D.IgnoreLayerCollision(9, 8); //Arrow and BunnyGenerator
@@ -143,7 +156,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            FinalEnemyRound = true;
+            FinalRound = true;
         }
     }
 
@@ -168,7 +181,7 @@ public class GameManager : MonoBehaviour
                     CarrotSpawner.StopCarrotSpawn();
                     CurrentGameState = GameState.Lost;
                 }
-                else if (FinalEnemyRound && Enemies.Where(x => x != null).Count() == 0)
+                else if (FinalRound && Enemies.Where(x => x != null).Count() == 0)
                 {
                     DestroyExistingEnemiesAndCarrots();
                     CarrotSpawner.StopCarrotSpawn();
@@ -203,6 +216,23 @@ public class GameManager : MonoBehaviour
         foreach (var item in carrots)
         {
             Destroy(item);
+        }
+    }
+
+    public void AlterMoneyAvailable(int money)
+    {
+        MoneyAvailable += money;
+        if(MoneyAvailable < Constants.BunnyCost)
+        {
+            Color temp = BunnyGeneratorSprite.color;
+            temp.a = 0.3f;
+            BunnyGeneratorSprite.color = temp;
+        }
+        else
+        {
+            Color temp = BunnyGeneratorSprite.color;
+            temp.a = 1.0f;
+            BunnyGeneratorSprite.color = temp;
         }
     }
 

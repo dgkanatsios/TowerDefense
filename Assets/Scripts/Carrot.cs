@@ -31,7 +31,7 @@ public class Carrot : MonoBehaviour
             //14 is tha layer ID for the carrot layer
             if (this.GetComponent<BoxCollider2D>() == Physics2D.OverlapPoint(location, 1<<14))
             {
-                GameManager.MoneyAvailable += Constants.CarrotAward;
+                GameManager.Instance.AlterMoneyAvailable(Constants.CarrotAward);
                 Destroy(this.gameObject);
             }
         }
