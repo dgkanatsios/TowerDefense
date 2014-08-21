@@ -8,7 +8,6 @@ public class Enemy : MonoBehaviour
     //death sound found here
     //https://www.freesound.org/people/psychentist/sounds/168567/
 
-    public AudioManager audioManager;
     public int Health;
     int nextWaypointIndex = 0;
     public float Speed = 1f;
@@ -67,7 +66,7 @@ public class Enemy : MonoBehaviour
 
     void DestroyAndRemoveFromMemory()
     {
-        audioManager.PlayDeathSound();
+        AudioManager.Instance.PlayDeathSound();
         GameManager.Enemies.Remove(this.gameObject);
         Destroy(this.gameObject);
 

@@ -9,7 +9,6 @@ public class Bunny : MonoBehaviour
     //arrow sound found here
     //https://www.freesound.org/people/Erdie/sounds/65734/
 
-    public AudioManager audioManager;
     public Transform ArrowSpawnPosition;
     public GameObject ArrowPrefab;
     public float ShootWaitTime = 2f;
@@ -98,7 +97,7 @@ public class Bunny : MonoBehaviour
             GameObject go =
                 Instantiate(ArrowPrefab, ArrowSpawnPosition.position, transform.rotation) as GameObject;
             go.GetComponent<Rigidbody2D>().AddForce(dir * 500);
-            audioManager.PlayArrow();
+            AudioManager.Instance.PlayArrowSound();
         }
         else
         {

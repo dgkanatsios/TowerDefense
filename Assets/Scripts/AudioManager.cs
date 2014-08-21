@@ -5,19 +5,29 @@ public class AudioManager : MonoBehaviour {
 
     public AudioClip ArrowAudioClip, DeathSoundAudioClip;
 
-    public void PlayArrow()
+    public static AudioManager Instance;
+
+    void Awake()
     {
-        GameObject go = new GameObject("arrowSound");
-        go.AddComponent<AudioSource>();
-        go.GetComponent<AudioSource>().PlayOneShot(ArrowAudioClip);
-        Destroy(go, ArrowAudioClip.length);
+        Instance = this;
+    }
+
+    public void PlayArrowSound()
+    {
+        StartCoroutine(PlaySound(ArrowAudioClip));
     }
 
     public void PlayDeathSound()
     {
-        GameObject go = new GameObject("deathSound");
-        go.AddComponent<AudioSource>();
-        go.GetComponent<AudioSource>().PlayOneShot(DeathSoundAudioClip);
-        Destroy(go, DeathSoundAudioClip.length);
+        StartCoroutine(PlaySound(DeathSoundAudioClip));
+    }
+
+    private IEnumerator PlaySound(AudioClip clip)
+    {
+        GameObject go = ObjectPooler.Instance.GetPooledObject();
+        go.SetActive(true);
+        go.GetComponent<AudioSource>().PlayOneShot(clip);
+        yield return new WaitForSeconds(clip.length);
+        go.SetActive(false);
     }
 }

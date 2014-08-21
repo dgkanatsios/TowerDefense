@@ -11,7 +11,7 @@ public class DragDropBunny : MonoBehaviour
     {
         mainCamera = Camera.main;
     }
-    public AudioManager audioManager;
+   
     private Camera mainCamera;
     public GameObject BunnyPrefab;
     public GameObject BunnyGenerator;
@@ -83,7 +83,6 @@ public class DragDropBunny : MonoBehaviour
                 GameManager.MoneyAvailable -= Constants.BunnyCost;
                 newBunny.transform.position = hits.Where(x => x.collider.gameObject.tag == "Background")
                     .First().collider.gameObject.transform.position;
-                newBunny.GetComponent<Bunny>().audioManager = audioManager;
                 newBunny.GetComponent<Bunny>().Activate();
             }
             else

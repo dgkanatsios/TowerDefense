@@ -114,7 +114,6 @@ public class GameManager : MonoBehaviour
             GameObject enemy = Instantiate(EnemyPrefab, Waypoints[0].position, Quaternion.identity) as GameObject;
             enemy.GetComponent<Enemy>().Speed += currentRoundIndex;
             enemy.GetComponent<Enemy>().EnemyKilled += OnEnemyKilled;
-            enemy.GetComponent<Enemy>().audioManager = audioManager;
             Enemies.Add(enemy);
             yield return new WaitForSeconds(1f / (currentRoundIndex == 0 ? 1 : currentRoundIndex));
         }
