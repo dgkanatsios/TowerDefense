@@ -52,7 +52,7 @@ public class DragDropBunny : MonoBehaviour
                     || hits.Where(x=>x.collider.gameObject.tag == "Bunny").Count() > 1)
                 {
                     //we cannot place a bunny there
-                    GameObject backgroundBehindPath = hits.Where(x => x.collider.gameObject.tag == "Background").Single().collider.gameObject;
+                    GameObject backgroundBehindPath = hits.Where(x => x.collider.gameObject.tag == "Background").First().collider.gameObject;
                     backgroundBehindPath.GetComponent<SpriteRenderer>().color = Constants.RedColor;
                     
                     if (tempBackgroundBehindPath != backgroundBehindPath)
