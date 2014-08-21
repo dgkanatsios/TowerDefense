@@ -5,9 +5,14 @@ using Assets.Scripts;
 
 public class Bunny : MonoBehaviour
 {
+
+    //arrow sound found here
+    //https://www.freesound.org/people/Erdie/sounds/65734/
+
+    public AudioManager audioManager;
     public Transform ArrowSpawnPosition;
     public GameObject ArrowPrefab;
-    public float ShootWaitTime = 1f;
+    public float ShootWaitTime = 2f;
     private float LastShootTime = 0f;
     GameObject targetedEnemy;
 
@@ -46,11 +51,10 @@ public class Bunny : MonoBehaviour
         }
         else if (State == BunnyState.Targeting)
         {
-            if (targetedEnemy != null && targetedEnemy.activeSelf
+            if (targetedEnemy != null 
                 && Vector3.Distance(transform.position, targetedEnemy.transform.position)
                     < Constants.MinDistanceForBunnyToShoot)
             {
-                //Debug.DrawLine(transform.position, targetedEnemy.transform.position);
                 LookAndShoot();
             }
             else
@@ -94,6 +98,7 @@ public class Bunny : MonoBehaviour
             GameObject go =
                 Instantiate(ArrowPrefab, ArrowSpawnPosition.position, transform.rotation) as GameObject;
             go.GetComponent<Rigidbody2D>().AddForce(dir * 500);
+            audioManager.PlayArrow();
         }
         else
         {

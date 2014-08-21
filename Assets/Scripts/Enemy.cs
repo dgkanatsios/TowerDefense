@@ -1,10 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 using Assets.Scripts;
+using System;
 
 public class Enemy : MonoBehaviour
 {
+    //death sound found here
+    //https://www.freesound.org/people/psychentist/sounds/168567/
 
+    public AudioManager audioManager;
     public int Health;
     int nextWaypointIndex = 0;
     public float Speed = 1f;
@@ -43,7 +47,7 @@ public class Enemy : MonoBehaviour
     }
 
 
-
+    public event EventHandler EnemyKilled;
 
     void OnCollisionEnter2D(Collision2D col)
     {
@@ -51,7 +55,7 @@ public class Enemy : MonoBehaviour
         {//if we're hit by an arrow
             if (Health > 0)
             {
-                Health -= Constants.ArrowDamage; 
+                Health -= Constants.ArrowDamage;
                 if (Health <= 0)
                 {
                     DestroyAndRemoveFromMemory();
@@ -63,7 +67,12 @@ public class Enemy : MonoBehaviour
 
     void DestroyAndRemoveFromMemory()
     {
-        Destroy(this.gameObject);
+        audioManager.PlayDeathSound();
         GameManager.Enemies.Remove(this.gameObject);
+        Destroy(this.gameObject);
+
+       
+        if (EnemyKilled != null)
+            EnemyKilled(this, EventArgs.Empty);
     }
 }

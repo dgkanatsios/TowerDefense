@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Assets.Scripts;
 using System.Collections;
+using System;
 
 public class GameManager : MonoBehaviour
 {
@@ -33,8 +34,10 @@ public class GameManager : MonoBehaviour
     public static GameState CurrentGameState;
 
     public static bool FinalEnemyRound;
+    public AudioManager audioManager;
+    public GUIText infoText;
 
-    public GUIText guiText;
+    private object lockerObject = new object();
 
     // Use this for initialization
     void Start()
@@ -102,34 +105,46 @@ public class GameManager : MonoBehaviour
 
 
 
-    IEnumerator SpawnEnemy()
+    IEnumerator NextRound()
     {
-        while (true)
+        yield return new WaitForSeconds(2f);
+        Round currentRound = levelStuffFromXML.Rounds[currentRoundIndex];
+        for (int i = 0; i < currentRound.NoOfEnemies; i++)
         {
-            //before spawning, check if there are active enemies on screen
-            if (Enemies.Where(x => x != null).Count() > 0 && !FinalEnemyRound)
-            {
-                //enemies exist, so wait for 2 seconds and check again
-                yield return new WaitForSeconds(2f);
-                continue;
-            }
+            GameObject enemy = Instantiate(EnemyPrefab, Waypoints[0].position, Quaternion.identity) as GameObject;
+            enemy.GetComponent<Enemy>().Speed += currentRoundIndex;
+            enemy.GetComponent<Enemy>().EnemyKilled += OnEnemyKilled;
+            enemy.GetComponent<Enemy>().audioManager = audioManager;
+            Enemies.Add(enemy);
+            yield return new WaitForSeconds(1f / (currentRoundIndex == 0 ? 1 : currentRoundIndex));
+        }
 
-            Round currentRound = levelStuffFromXML.Rounds[currentRoundIndex];
-            for (int i = 0; i < currentRound.NoOfEnemies; i++)
+    }
+
+    void OnEnemyKilled(object sender, EventArgs e)
+    {
+        bool startNewRound = false;
+        lock (lockerObject)
+        {
+            if (Enemies.Where(x => x != null).Count() == 0 && CurrentGameState == GameState.Playing)
             {
-                GameObject enemy = Instantiate(EnemyPrefab, Waypoints[0].position, Quaternion.identity) as GameObject;
-                Enemies.Add(enemy);
-                yield return new WaitForSeconds(1f);
+                startNewRound = true;
             }
-            if (currentRoundIndex < levelStuffFromXML.Rounds.Count - 1)
-            {
-                currentRoundIndex++;
-            }
-            else
-            {
-                FinalEnemyRound = true;
-                yield break;
-            }
+        }
+        if (startNewRound)
+            CheckAndStartNewRound();
+    }
+
+    private void CheckAndStartNewRound()
+    {
+        if (currentRoundIndex < levelStuffFromXML.Rounds.Count - 1)
+        {
+            currentRoundIndex++;
+            StartCoroutine(NextRound());
+        }
+        else
+        {
+            FinalEnemyRound = true;
         }
     }
 
@@ -142,14 +157,14 @@ public class GameManager : MonoBehaviour
                 if (Input.GetMouseButtonUp(0))
                 {
                     CurrentGameState = GameState.Playing;
-                    StartCoroutine(SpawnEnemy());
+                    StartCoroutine(NextRound());
                     CarrotSpawner.StartCarrotSpawn();
                 }
                 break;
             case GameState.Playing:
                 if (Lives == 0) //we lost
                 {
-                    StopCoroutine(SpawnEnemy());
+                    StopCoroutine(NextRound());
                     DestroyExistingEnemiesAndCarrots();
                     CarrotSpawner.StopCarrotSpawn();
                     CurrentGameState = GameState.Lost;
@@ -198,17 +213,18 @@ public class GameManager : MonoBehaviour
         switch (CurrentGameState)
         {
             case GameState.Start:
-                guiText.text = "Tap to start!";
+                infoText.text = "Tap to start!";
                 break;
             case GameState.Playing:
-                guiText.text = "Money: " + MoneyAvailable.ToString() + "\n"
-                    + "Life: " + Lives.ToString();
+                infoText.text = "Money: " + MoneyAvailable.ToString() + "\n"
+                    + "Life: " + Lives.ToString() + "\n" +
+                    string.Format("round {0} of {1}", currentRoundIndex + 1, levelStuffFromXML.Rounds.Count);
                 break;
             case GameState.Won:
-                guiText.text = "Won :( Tap to restart!";
+                infoText.text = "Won :( Tap to restart!";
                 break;
             case GameState.Lost:
-                guiText.text = "Lost :( Tap to restart!";
+                infoText.text = "Lost :( Tap to restart!";
                 break;
             default:
                 break;
