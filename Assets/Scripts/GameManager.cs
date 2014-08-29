@@ -107,13 +107,21 @@ public class GameManager : MonoBehaviour
     /// </summary>
     private void IgnoreLayerCollisions()
     {
-        Physics2D.IgnoreLayerCollision(12, 15); //Bunny and Enemy (when dragging the bunny)
-        Physics2D.IgnoreLayerCollision(9, 8); //Arrow and BunnyGenerator
-        Physics2D.IgnoreLayerCollision(9, 10); //Arrow and Background
-        Physics2D.IgnoreLayerCollision(9, 11); //Arrow and Path
-        Physics2D.IgnoreLayerCollision(9, 12); //Arrow and Bunny
-        Physics2D.IgnoreLayerCollision(9, 13); //Arrow and Tower
-        Physics2D.IgnoreLayerCollision(9, 14); //Arrow and Carrot
+        int bunnyLayerID = LayerMask.NameToLayer("Bunny");
+        int enemyLayerID = LayerMask.NameToLayer("Enemy");
+        int arrowLayerID = LayerMask.NameToLayer("Arrow");
+        int bunnyGeneratorLayerID = LayerMask.NameToLayer("BunnyGenerator");
+        int backgroundLayerID = LayerMask.NameToLayer("Background");
+        int pathLayerID = LayerMask.NameToLayer("Path");
+        int towerLayerID = LayerMask.NameToLayer("Tower");
+        int carrotLayerID = LayerMask.NameToLayer("Carrot");
+        Physics2D.IgnoreLayerCollision(bunnyLayerID, enemyLayerID); //Bunny and Enemy (when dragging the bunny)
+        Physics2D.IgnoreLayerCollision(arrowLayerID, bunnyGeneratorLayerID); //Arrow and BunnyGenerator
+        Physics2D.IgnoreLayerCollision(arrowLayerID, backgroundLayerID); //Arrow and Background
+        Physics2D.IgnoreLayerCollision(arrowLayerID, pathLayerID); //Arrow and Path
+        Physics2D.IgnoreLayerCollision(arrowLayerID, bunnyLayerID); //Arrow and Bunny
+        Physics2D.IgnoreLayerCollision(arrowLayerID, towerLayerID); //Arrow and Tower
+        Physics2D.IgnoreLayerCollision(arrowLayerID, carrotLayerID); //Arrow and Carrot
     }
 
 

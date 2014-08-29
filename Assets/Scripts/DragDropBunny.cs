@@ -29,8 +29,8 @@ public class DragDropBunny : MonoBehaviour
             ResetTempBackgroundColor();
             Vector2 location = mainCamera.ScreenToWorldPoint(Input.mousePosition);
             //if user has tapped onto the bunny generator
-            //8 is the layerID of the BunnyGenerator
-            if (BunnyGenerator.GetComponent<CircleCollider2D>() == Physics2D.OverlapPoint(location, 1 << 8))
+            if (BunnyGenerator.GetComponent<CircleCollider2D>() ==
+                Physics2D.OverlapPoint(location, 1 << LayerMask.NameToLayer("BunnyGenerator")))
             {
                 isDragging = true;
                 newBunny = Instantiate(BunnyPrefab, BunnyGenerator.transform.position, Quaternion.identity)
@@ -74,8 +74,9 @@ public class DragDropBunny : MonoBehaviour
 
             ResetTempBackgroundColor();
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            //8 is BunnyGenerator layer ID
-            RaycastHit2D[] hits = Physics2D.RaycastAll(ray.origin, ray.direction, Mathf.Infinity, ~(1 << 8));
+
+            RaycastHit2D[] hits = Physics2D.RaycastAll(ray.origin, ray.direction,
+                Mathf.Infinity, ~(1 << LayerMask.NameToLayer("BunnyGenerator")));
             //in order to place it, we must have a background and no other bunnies
             if (hits.Where(x=>x.collider.gameObject.tag == "Background").Count() > 0
                 && hits.Where(x => x.collider.gameObject.tag == "Path").Count() == 0

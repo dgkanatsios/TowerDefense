@@ -20,7 +20,7 @@ public class Carrot : MonoBehaviour
     {
         transform.position = new Vector3(
             transform.position.x,
-            transform.position.y - Time.deltaTime * FallSpeed, 
+            transform.position.y - Time.deltaTime * FallSpeed,
             transform.position.z);
         transform.Rotate(0, 0, Time.deltaTime * 10);
 
@@ -28,8 +28,9 @@ public class Carrot : MonoBehaviour
         {
 
             Vector2 location = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            //14 is tha layer ID for the carrot layer
-            if (this.GetComponent<BoxCollider2D>() == Physics2D.OverlapPoint(location, 1<<14))
+
+            if (this.GetComponent<BoxCollider2D>() == Physics2D.OverlapPoint(location,
+                1 << LayerMask.NameToLayer("Carrot")))
             {
                 GameManager.Instance.AlterMoneyAvailable(Constants.CarrotAward);
                 Destroy(this.gameObject);
