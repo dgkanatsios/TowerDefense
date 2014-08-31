@@ -6,38 +6,29 @@ using System;
 public class ObjectPooler : MonoBehaviour
 {
 
-    
+    public Transform Parent;
     public GameObject PooledObject;
-    List<GameObject> PooledObjects;
-    public int PoolLength = 20;
+    private List<GameObject> PooledObjects;
+    public int PoolLength = 10;
 
+    private Type[] componentsToAdd;
 
-    // Use this for initialization
-    public void Initialize(params Type[] componentsToAdd)
-
+    public void Initialize()
     {
         PooledObjects = new List<GameObject>();
         for (int i = 0; i < PoolLength; i++)
         {
-            GameObject go;
-            if (PooledObject == null)
-                go = new GameObject(this.name + " PooledObject");
-            else
-            {
-                go = Instantiate(PooledObject) as GameObject;
-            }
-
-            foreach (var item in componentsToAdd)
-            {
-                go.AddComponent(item);
-            }
-
-            //go.transform.parent = this.transform;
-
-            go.SetActive(false);
-            PooledObjects.Add(go);
+            CreateObjectsInPool();
         }
     }
+
+    public void Initialize(params Type[] componentsToAdd)
+    {
+        this.componentsToAdd = componentsToAdd;
+        Initialize();
+    }
+
+
 
     public GameObject GetPooledObject()
     {
@@ -50,15 +41,34 @@ public class ObjectPooler : MonoBehaviour
         }
         int indexToReturn = PooledObjects.Count;
         //create more
-        for (int i = 0; i < PoolLength; i++)
-        {
-            GameObject go = Instantiate(PooledObject) as GameObject;
-            go.SetActive(false);
-            PooledObjects.Add(go);
-        }
+        CreateObjectsInPool(); Debug.Log("created more");
         //will return the first one that we created
         return PooledObjects[indexToReturn];
     }
 
+    private void CreateObjectsInPool()
+    {
+        GameObject go;
+        if (PooledObject == null)
+            go = new GameObject(this.name + " PooledObject");
+        else
+        {
+            go = Instantiate(PooledObject) as GameObject;
+        }
 
+        go.SetActive(false);
+        PooledObjects.Add(go);
+
+        if (componentsToAdd != null)
+            foreach (var item in componentsToAdd)
+            {
+                go.AddComponent(item);
+            }
+
+
+        if (Parent != null)
+            go.transform.parent = this.Parent;
+
+
+    }
 }

@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class ObjectPoolerManager : MonoBehaviour {
 
@@ -30,7 +31,6 @@ public class ObjectPoolerManager : MonoBehaviour {
         {
             GameObject go = new GameObject("AudioPooler");
             AudioPooler = go.AddComponent<ObjectPooler>();
-            AudioPooler.gameObject.AddComponent<AudioSource>();
             go.transform.parent = this.gameObject.transform;
             AudioPooler.Initialize(typeof(AudioSource));
         }
