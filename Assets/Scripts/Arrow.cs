@@ -5,8 +5,13 @@ public class Arrow : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        Destroy(this.gameObject, 5f);
+        Invoke("Disable", 5f);
 	}
+
+    public void Disable()
+    {
+        this.gameObject.SetActive(false);
+    }
 	
 	
 }

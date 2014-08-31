@@ -60,7 +60,7 @@ public class Enemy : MonoBehaviour
                     DestroyAndRemoveFromMemory();
                 }
             }
-            Destroy(col.gameObject); //destroy the arrow
+            col.gameObject.GetComponent<Arrow>().Disable(); //disable the arrow
         }
     }
 

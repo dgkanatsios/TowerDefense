@@ -14,6 +14,7 @@ public class Bunny : MonoBehaviour
     public float ShootWaitTime = 2f;
     private float LastShootTime = 0f;
     GameObject targetedEnemy;
+    private float InitialArrowForce = 500f;
 
     // Use this for initialization
     void Start()
@@ -94,9 +95,12 @@ public class Bunny : MonoBehaviour
             && Vector3.Distance(transform.position, targetedEnemy.transform.position)
                     < Constants.MinDistanceForBunnyToShoot)
         {
-            GameObject go =
-                Instantiate(ArrowPrefab, ArrowSpawnPosition.position, transform.rotation) as GameObject;
-            go.GetComponent<Rigidbody2D>().AddForce(dir * 500);
+            GameObject go = ObjectPoolerManager.Instance.ArrowPooler.GetPooledObject();
+            go.transform.position = ArrowSpawnPosition.position;
+            go.transform.rotation = transform.rotation;
+            go.SetActive(true);
+                //Instantiate(ArrowPrefab, ArrowSpawnPosition.position, transform.rotation) as GameObject;
+            go.GetComponent<Rigidbody2D>().AddForce(dir * InitialArrowForce);
             AudioManager.Instance.PlayArrowSound();
         }
         else

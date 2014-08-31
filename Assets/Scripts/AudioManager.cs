@@ -24,7 +24,7 @@ public class AudioManager : MonoBehaviour {
 
     private IEnumerator PlaySound(AudioClip clip)
     {
-        GameObject go = ObjectPooler.Instance.GetPooledObject();
+        GameObject go = ObjectPoolerManager.Instance.AudioPooler.GetPooledObject();
         go.SetActive(true);
         go.GetComponent<AudioSource>().PlayOneShot(clip);
         yield return new WaitForSeconds(clip.length);

@@ -1,34 +1,39 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class ObjectPooler : MonoBehaviour
 {
 
-    public static ObjectPooler Instance;
+    
     public GameObject PooledObject;
     List<GameObject> PooledObjects;
     public int PoolLength = 20;
-    public bool AddAudioSource = true;
 
-    void Awake()
-    {
-        Instance = this;
-    }
 
     // Use this for initialization
-    void Start()
+    public void Initialize(params Type[] componentsToAdd)
+
     {
         PooledObjects = new List<GameObject>();
         for (int i = 0; i < PoolLength; i++)
         {
             GameObject go;
             if (PooledObject == null)
-                go = new GameObject("PooledObject");
+                go = new GameObject(this.name + " PooledObject");
             else
+            {
                 go = Instantiate(PooledObject) as GameObject;
-            if (AddAudioSource)
-                go.AddComponent<AudioSource>();
+            }
+
+            foreach (var item in componentsToAdd)
+            {
+                go.AddComponent(item);
+            }
+
+            //go.transform.parent = this.transform;
+
             go.SetActive(false);
             PooledObjects.Add(go);
         }
