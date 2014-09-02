@@ -28,7 +28,7 @@ public class Enemy : MonoBehaviour
             //is this waypoint the last one?
             if (nextWaypointIndex == GameManager.Instance.Waypoints.Length - 1)
             {
-                DestroyAndRemoveFromMemory();
+                RemoveAndDestroy();
                 GameManager.Instance.Lives--;
             }
             else
@@ -57,14 +57,14 @@ public class Enemy : MonoBehaviour
                 Health -= Constants.ArrowDamage;
                 if (Health <= 0)
                 {
-                    DestroyAndRemoveFromMemory();
+                    RemoveAndDestroy();
                 }
             }
             col.gameObject.GetComponent<Arrow>().Disable(); //disable the arrow
         }
     }
 
-    void DestroyAndRemoveFromMemory()
+    void RemoveAndDestroy()
     {
         AudioManager.Instance.PlayDeathSound();
         GameManager.Instance.Enemies.Remove(this.gameObject);

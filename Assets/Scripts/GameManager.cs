@@ -133,8 +133,9 @@ public class GameManager : MonoBehaviour
         for (int i = 0; i < currentRound.NoOfEnemies; i++)
         {
             GameObject enemy = Instantiate(EnemyPrefab, Waypoints[0].position, Quaternion.identity) as GameObject;
-            enemy.GetComponent<Enemy>().Speed += currentRoundIndex;
-            enemy.GetComponent<Enemy>().EnemyKilled += OnEnemyKilled;
+            Enemy enemyComponent = enemy.GetComponent<Enemy>();
+            enemyComponent.Speed += Mathf.Clamp(currentRoundIndex, 1f, 5f);
+            enemyComponent.EnemyKilled += OnEnemyKilled;
             Enemies.Add(enemy);
             yield return new WaitForSeconds(1f / (currentRoundIndex == 0 ? 1 : currentRoundIndex));
         }
@@ -230,7 +231,7 @@ public class GameManager : MonoBehaviour
     public void AlterMoneyAvailable(int money)
     {
         MoneyAvailable += money;
-        if(MoneyAvailable < Constants.BunnyCost)
+        if (MoneyAvailable < Constants.BunnyCost)
         {
             Color temp = BunnyGeneratorSprite.color;
             temp.a = 0.3f;

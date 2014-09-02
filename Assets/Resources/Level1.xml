@@ -87,5 +87,5 @@
     <Round NoOfEnemies="10" />
     <Round NoOfEnemies="12" />
   </Rounds>
-  <OtherStuff InitialMoney ="100" MinCarrotSpawnTime="3" MaxCarrotSpawnTime="5" />
+  <OtherStuff InitialMoney ="100" MinCarrotSpawnTime="2" MaxCarrotSpawnTime="5" />
 </Elements>
