@@ -5,7 +5,7 @@ using Assets.Scripts;
 public class Carrot : MonoBehaviour
 {
 
-    //sprite found in http://opengameart.org/content/easter-carrot-pick-up-item
+    //carrot sprite found in http://opengameart.org/content/easter-carrot-pick-up-item
 
     Camera mainCamera;
 
@@ -26,13 +26,15 @@ public class Carrot : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-
+            //check if the user tap/click touches the carrot
             Vector2 location = mainCamera.ScreenToWorldPoint(Input.mousePosition);
 
             if (this.GetComponent<BoxCollider2D>() == Physics2D.OverlapPoint(location,
                 1 << LayerMask.NameToLayer("Carrot")))
             {
+                //increase player money
                 GameManager.Instance.AlterMoneyAvailable(Constants.CarrotAward);
+                //destroy carrot
                 Destroy(this.gameObject);
             }
         }
