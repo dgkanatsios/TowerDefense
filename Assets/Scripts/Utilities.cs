@@ -42,15 +42,12 @@ namespace Assets.Scripts
             }
 
             var waypoints = el.Element("Waypoints").Elements("Waypoint");
-
             foreach (var item in waypoints)
             {
                 ls.Waypoints.Add(new Vector2(float.Parse(item.Attribute("X").Value), float.Parse(item.Attribute("Y").Value)));
             }
 
-
             var rounds = el.Element("Rounds").Elements("Round");
-
             foreach (var item in rounds)
             {
                 ls.Rounds.Add(new Round()

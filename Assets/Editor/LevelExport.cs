@@ -8,7 +8,6 @@ using System.Collections.Generic;
 
 public class LevelExport : EditorWindow
 {
-
     [MenuItem("Custom Editor/Export Level")]
     public static void ShowWindow()
     {
@@ -24,12 +23,11 @@ public class LevelExport : EditorWindow
     int pathsCount;
     void OnGUI()
     {
-
         scrollPosition = EditorGUILayout.BeginScrollView(scrollPosition);
+        EditorGUILayout.LabelField("Total Rounds created:" + rounds.Count);
         for (int i = 0; i < rounds.Count; i++)
         {
             EditorGUILayout.BeginHorizontal();
-            // this gives errors:
             EditorGUILayout.LabelField("Round " + (i + 1));
             EditorGUILayout.LabelField("Number of Enemies " + rounds[i].NoOfEnemies);
             if (GUILayout.Button("Delete"))
