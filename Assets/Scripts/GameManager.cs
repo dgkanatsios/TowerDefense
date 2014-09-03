@@ -7,6 +7,7 @@ using System;
 
 public class GameManager : MonoBehaviour
 {
+    //basic singleton implementation
     [HideInInspector]
     public static GameManager Instance { get; private set; }
 
@@ -47,7 +48,6 @@ public class GameManager : MonoBehaviour
     public SpriteRenderer BunnyGeneratorSprite;
     [HideInInspector]
     public bool FinalRound;
-    public AudioManager audioManager;
     public GUIText infoText;
 
     private object lockerObject = new object();
@@ -55,7 +55,6 @@ public class GameManager : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
         IgnoreLayerCollisions();
 
         Enemies = new List<GameObject>();
@@ -128,23 +127,34 @@ public class GameManager : MonoBehaviour
 
     IEnumerator NextRound()
     {
+        //give the player 2 secs to do stuff
         yield return new WaitForSeconds(2f);
+        //get a reference to the next round details
         Round currentRound = levelStuffFromXML.Rounds[currentRoundIndex];
         for (int i = 0; i < currentRound.NoOfEnemies; i++)
-        {
+        {//spawn a new enemy
             GameObject enemy = Instantiate(EnemyPrefab, Waypoints[0].position, Quaternion.identity) as GameObject;
             Enemy enemyComponent = enemy.GetComponent<Enemy>();
+            //set speed and enemyKilled handler
             enemyComponent.Speed += Mathf.Clamp(currentRoundIndex, 1f, 5f);
             enemyComponent.EnemyKilled += OnEnemyKilled;
+            //add it to the list and wait till you spawn the next one
             Enemies.Add(enemy);
             yield return new WaitForSeconds(1f / (currentRoundIndex == 0 ? 1 : currentRoundIndex));
         }
 
     }
 
+    /// <summary>
+    /// Handler for the enemy killed event
+    /// </summary>
+    /// <param name="sender"></param>
+    /// <param name="e"></param>
     void OnEnemyKilled(object sender, EventArgs e)
     {
         bool startNewRound = false;
+        //explicit lock, since this may occur any time by any enemy
+        //not 100% that this is needed, but better safe than sorry!
         lock (lockerObject)
         {
             if (Enemies.Where(x => x != null).Count() == 0 && CurrentGameState == GameState.Playing)
@@ -156,6 +166,9 @@ public class GameManager : MonoBehaviour
             CheckAndStartNewRound();
     }
 
+    /// <summary>
+    /// Starts a new round (if available) and sets the FinalRound flag
+    /// </summary>
     private void CheckAndStartNewRound()
     {
         if (currentRoundIndex < levelStuffFromXML.Rounds.Count - 1)
@@ -174,38 +187,40 @@ public class GameManager : MonoBehaviour
     {
         switch (CurrentGameState)
         {
+            //start state, on tap, start the game and spawn carrots!
             case GameState.Start:
                 if (Input.GetMouseButtonUp(0))
                 {
                     CurrentGameState = GameState.Playing;
                     StartCoroutine(NextRound());
-                    CarrotSpawner.StartCarrotSpawn();
+                    CarrotSpawner.StartCarrotSpawning();
                 }
                 break;
             case GameState.Playing:
                 if (Lives == 0) //we lost
                 {
+                    //no more rounds
                     StopCoroutine(NextRound());
                     DestroyExistingEnemiesAndCarrots();
-                    CarrotSpawner.StopCarrotSpawn();
+                    CarrotSpawner.StopCarrotSpawning();
                     CurrentGameState = GameState.Lost;
                 }
                 else if (FinalRound && Enemies.Where(x => x != null).Count() == 0)
                 {
                     DestroyExistingEnemiesAndCarrots();
-                    CarrotSpawner.StopCarrotSpawn();
+                    CarrotSpawner.StopCarrotSpawning();
                     CurrentGameState = GameState.Won;
                 }
                 break;
             case GameState.Won:
                 if (Input.GetMouseButtonUp(0))
-                {
+                {//restart
                     Application.LoadLevel(Application.loadedLevel);
                 }
                 break;
             case GameState.Lost:
                 if (Input.GetMouseButtonUp(0))
-                {
+                {//restart
                     Application.LoadLevel(Application.loadedLevel);
                 }
                 break;
@@ -216,11 +231,13 @@ public class GameManager : MonoBehaviour
 
     private void DestroyExistingEnemiesAndCarrots()
     {
+        //get all the enemies
         foreach (var item in Enemies)
         {
             if (item != null)
                 Destroy(item.gameObject);
         }
+        //get all the carrots
         var carrots = GameObject.FindGameObjectsWithTag("Carrot");
         foreach (var item in carrots)
         {
@@ -228,9 +245,15 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Increase or decrease money available
+    /// </summary>
+    /// <param name="money"></param>
     public void AlterMoneyAvailable(int money)
     {
         MoneyAvailable += money;
+        //we're also modifying the BunnyGenerator alpha color
+        //yeah, I know, I could use an event for that, next time!
         if (MoneyAvailable < Constants.BunnyCost)
         {
             Color temp = BunnyGeneratorSprite.color;
@@ -245,6 +268,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Show GUI stuff with the deprecated way
+    /// Long live Unity 4.6!
+    /// </summary>
     void OnGUI()
     {
         Utilities.AutoResize(800, 480);
@@ -267,7 +294,5 @@ public class GameManager : MonoBehaviour
             default:
                 break;
         }
-
-
     }
 }

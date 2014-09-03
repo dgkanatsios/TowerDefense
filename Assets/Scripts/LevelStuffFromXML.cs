@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace Assets.Scripts
 {
+    /// <summary>
+    /// Simple class to hold all our level details
+    /// </summary>
     public class LevelStuffFromXML
     {
         public float MinCarrotSpawnTime;
@@ -24,6 +27,9 @@ namespace Assets.Scripts
 
     }
 
+    /// <summary>
+    /// Some basic information about each game round
+    /// </summary>
     public class Round
     {
         public int NoOfEnemies { get; set; }

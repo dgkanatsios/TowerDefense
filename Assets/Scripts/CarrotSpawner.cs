@@ -8,16 +8,16 @@ public class CarrotSpawner : MonoBehaviour {
     /// </summary>
     public GameObject Carrot;
 
-    public void StartCarrotSpawn()
+    public void StartCarrotSpawning()
     {
-        StartCoroutine(SpawnCarrot());
+        StartCoroutine(SpawnCarrots());
     }
 
-    public void StopCarrotSpawn()
+    public void StopCarrotSpawning()
     {
-        StopCoroutine(SpawnCarrot());
+        StopCoroutine(SpawnCarrots());
     }
-    private IEnumerator SpawnCarrot()
+    private IEnumerator SpawnCarrots()
     {
         while (true)
         {

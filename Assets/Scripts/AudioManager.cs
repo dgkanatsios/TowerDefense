@@ -8,7 +8,7 @@ public class AudioManager : MonoBehaviour {
     /// <summary>
     /// Basic singleton implementation
     /// </summary>
-    public static AudioManager Instance;
+    public static AudioManager Instance { get; private set; }
 
     void Awake()
     {

@@ -37,10 +37,11 @@ public class Enemy : MonoBehaviour
                 nextWaypointIndex++;
             }
         }
-
+        //our simple AI, enemy is looking at the next waypoint
         transform.LookAt(GameManager.Instance.Waypoints[nextWaypointIndex].position, -Vector3.forward);
+        //only in the z axis
         transform.eulerAngles = new Vector3(0, 0, transform.eulerAngles.z);
-
+        //enemy is moved towards the next waypoint
         transform.position = Vector2.MoveTowards(transform.position, GameManager.Instance.Waypoints[nextWaypointIndex].position,
             Time.deltaTime * Speed);
     }
@@ -54,6 +55,7 @@ public class Enemy : MonoBehaviour
         {//if we're hit by an arrow
             if (Health > 0)
             {
+                //decrease enemy health
                 Health -= Constants.ArrowDamage;
                 if (Health <= 0)
                 {
@@ -67,10 +69,10 @@ public class Enemy : MonoBehaviour
     void RemoveAndDestroy()
     {
         AudioManager.Instance.PlayDeathSound();
+        //remove it from the enemy list
         GameManager.Instance.Enemies.Remove(this.gameObject);
         Destroy(this.gameObject);
-
-       
+        //notify interested parties that we died
         if (EnemyKilled != null)
             EnemyKilled(this, EventArgs.Empty);
     }
