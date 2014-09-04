@@ -5,6 +5,7 @@ using System.IO;
 using System.Xml.Linq;
 using Assets.Scripts;
 using System.Collections.Generic;
+using System.Linq;
 
 public class LevelExport : EditorWindow
 {
@@ -18,7 +19,7 @@ public class LevelExport : EditorWindow
     int noOfEnemies;
     int initialMoney;
     int MinCarrotSpawnTime, MaxCarrotSpawnTime;
-    string filename;
+    string filename = "LevelX.xml";
     int waypointsCount;
     int pathsCount;
     void OnGUI()
@@ -48,10 +49,7 @@ public class LevelExport : EditorWindow
         initialMoney = EditorGUILayout.IntSlider("Initial Money", initialMoney, 200, 400);
         MinCarrotSpawnTime = EditorGUILayout.IntSlider("MinCarrotSpawnTime", MinCarrotSpawnTime, 1, 10);
         MaxCarrotSpawnTime = EditorGUILayout.IntSlider("MaxCarrotSpawnTime", MaxCarrotSpawnTime, 1, 10);
-        EditorGUILayout.BeginHorizontal();
-        EditorGUILayout.LabelField("Filename: ");
-        filename = EditorGUILayout.TextField("LevelX.xml");
-        EditorGUILayout.EndHorizontal();
+        filename = EditorGUILayout.TextField("Filename:", filename);
         EditorGUILayout.LabelField("Export Level", EditorStyles.boldLabel);
         if (GUILayout.Button("Export"))
         {
@@ -73,6 +71,7 @@ public class LevelExport : EditorWindow
 
         XElement pathPiecesXML = new XElement("PathPieces");
         var paths = GameObject.FindGameObjectsWithTag("Path");
+       
         foreach (var item in paths)
         {
             XElement path = new XElement("Path");
@@ -86,6 +85,12 @@ public class LevelExport : EditorWindow
 
         XElement waypointsXML = new XElement("Waypoints");
         var waypoints = GameObject.FindGameObjectsWithTag("Waypoint");
+        if (!WaypointsAreValid(waypoints))
+        {
+            return;
+        }
+        //order by user selected order
+        waypoints = waypoints.OrderBy(x => x.GetComponent<OrderedWaypointForEditor>().Order).ToArray();
         foreach (var item in waypoints)
         {
             XElement waypoint = new XElement("Waypoint");
@@ -132,7 +137,7 @@ public class LevelExport : EditorWindow
 
 
         if (EditorUtility.DisplayDialog("Save confirmation",
-            "Are you sure you want to save level " + filename, "OK", "Cancel"))
+            "Are you sure you want to save level " + filename +"?", "OK", "Cancel"))
         {
             doc.Save("Assets/" + filename);
             EditorUtility.DisplayDialog("Saved", filename + " saved!", "OK");
@@ -141,6 +146,24 @@ public class LevelExport : EditorWindow
         {
             EditorUtility.DisplayDialog("NOT Saved", filename + " not saved!", "OK");
         }
+    }
+
+    private bool WaypointsAreValid(GameObject[] waypoints)
+    {
+        //first check whether whey all have a OrderedWaypoint component
+        if (!waypoints.All(x => x.GetComponent<OrderedWaypointForEditor>() != null))
+        {
+            EditorUtility.DisplayDialog("Error", "All waypoints must have an ordered waypoint component", "OK");
+            return false;
+        }
+        //check if all Order fields on the orderwaypoint components are different
+
+        if (waypoints.Count() != waypoints.Select(x=>x.GetComponent<OrderedWaypointForEditor>().Order).Distinct().Count())
+        {
+            EditorUtility.DisplayDialog("Error", "All waypoints must have a different order", "OK");
+            return false;
+        }
+        return true;
     }
 
     private void ShowErrorForNull(string gameObjectName)
@@ -164,12 +187,12 @@ public class LevelExport : EditorWindow
         }
 
         if (waypointsCount == 0)
-        { 
-             EditorUtility.DisplayDialog("Error", "You cannot have 0 waypoints", "OK");
+        {
+            EditorUtility.DisplayDialog("Error", "You cannot have 0 waypoints", "OK");
             return false;
         }
 
-        if(pathsCount == 0)
+        if (pathsCount == 0)
         {
             EditorUtility.DisplayDialog("Error", "You cannot have 0 paths", "OK");
             return false;

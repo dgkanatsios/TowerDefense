@@ -23,7 +23,7 @@ public class ObjectPooler : MonoBehaviour
         PooledObjects = new List<GameObject>();
         for (int i = 0; i < PoolLength; i++)
         {
-            CreateObjectsInPool();
+            CreateObjectInPool();
         }
     }
 
@@ -46,12 +46,12 @@ public class ObjectPooler : MonoBehaviour
         }
         int indexToReturn = PooledObjects.Count;
         //create more
-        CreateObjectsInPool(); 
+        CreateObjectInPool(); 
         //will return the first one that we created
         return PooledObjects[indexToReturn];
     }
 
-    private void CreateObjectsInPool()
+    private void CreateObjectInPool()
     {
         //if we don't have a prefab set, instantiate a new gameobject
         //else instantiate the prefab
