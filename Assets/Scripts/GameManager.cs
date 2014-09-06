@@ -47,7 +47,7 @@ public class GameManager : MonoBehaviour
     public GameState CurrentGameState;
     public SpriteRenderer BunnyGeneratorSprite;
     [HideInInspector]
-    public bool FinalRound;
+    public bool FinalRoundFinished;
     public GUIText infoText;
 
     private object lockerObject = new object();
@@ -66,7 +66,7 @@ public class GameManager : MonoBehaviour
 
         CurrentGameState = GameState.Start;
 
-        FinalRound = false;
+        FinalRoundFinished = false;
     }
 
     /// <summary>
@@ -76,7 +76,8 @@ public class GameManager : MonoBehaviour
     {
         foreach (var position in levelStuffFromXML.Paths)
         {
-            GameObject go = Instantiate(PathPrefab, position, Quaternion.identity) as GameObject;
+            GameObject go = Instantiate(PathPrefab, position, 
+                Quaternion.identity) as GameObject;
             go.GetComponent<SpriteRenderer>().sortingLayerName = "Path";
             go.transform.parent = PathPiecesParent.transform;
         }
@@ -90,7 +91,8 @@ public class GameManager : MonoBehaviour
             go.name = "Waypoints" + i.ToString();
         }
 
-        GameObject tower = Instantiate(TowerPrefab, levelStuffFromXML.Tower, Quaternion.identity) as GameObject;
+        GameObject tower = Instantiate(TowerPrefab, levelStuffFromXML.Tower,
+            Quaternion.identity) as GameObject;
         tower.GetComponent<SpriteRenderer>().sortingLayerName = "Foreground";
 
         Waypoints = GameObject.FindGameObjectsWithTag("Waypoint")
@@ -178,7 +180,7 @@ public class GameManager : MonoBehaviour
         }
         else
         {
-            FinalRound = true;
+            FinalRoundFinished = true;
         }
     }
 
@@ -205,7 +207,7 @@ public class GameManager : MonoBehaviour
                     CarrotSpawner.StopCarrotSpawning();
                     CurrentGameState = GameState.Lost;
                 }
-                else if (FinalRound && Enemies.Where(x => x != null).Count() == 0)
+                else if (FinalRoundFinished && Enemies.Where(x => x != null).Count() == 0)
                 {
                     DestroyExistingEnemiesAndCarrots();
                     CarrotSpawner.StopCarrotSpawning();
@@ -286,7 +288,7 @@ public class GameManager : MonoBehaviour
                     string.Format("round {0} of {1}", currentRoundIndex + 1, levelStuffFromXML.Rounds.Count);
                 break;
             case GameState.Won:
-                infoText.text = "Won :( Tap to restart!";
+                infoText.text = "Won! Tap to restart!";
                 break;
             case GameState.Lost:
                 infoText.text = "Lost :( Tap to restart!";

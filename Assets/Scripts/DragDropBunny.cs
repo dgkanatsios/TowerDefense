@@ -81,7 +81,6 @@ public class DragDropBunny : MonoBehaviour
                 }
 
             }
-
         }
         //we're stopping dragging
         else if (Input.GetMouseButtonUp(0) && isDragging)
@@ -99,7 +98,8 @@ public class DragDropBunny : MonoBehaviour
             {
                 //we can leave a bunny here, so decrease money and activate it
                 GameManager.Instance.AlterMoneyAvailable(-Constants.BunnyCost);
-                newBunny.transform.position = hits.Where(x => x.collider.gameObject.tag == "Background")
+                newBunny.transform.position = 
+                    hits.Where(x => x.collider.gameObject.tag == "Background")
                     .First().collider.gameObject.transform.position;
                 newBunny.GetComponent<Bunny>().Activate();
             }

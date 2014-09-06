@@ -28,7 +28,7 @@ public class Bunny : MonoBehaviour
     void Update()
     {
         //if we're in the last round and we've killed all enemies, do nothing
-        if (GameManager.Instance.FinalRound &&
+        if (GameManager.Instance.FinalRoundFinished &&
             GameManager.Instance.Enemies.Where(x => x != null).Count() == 0)
             State = BunnyState.Inactive;
 
