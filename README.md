@@ -1,4 +1,6 @@
-TowerDefense ![](https://gaforgithub.azurewebsites.net/api?repo=TowerDefenseStyleGame&empty)
+[![unofficial Google Analytics for GitHub](https://gaforgithub.azurewebsites.net/api?repo=TowerDefenseStyleGame)](https://github.com/dgkanatsios/gaforgithub)
+
+TowerDefense
 ============
 
 A Tower Defense clone in Unity3D. For a tutorial blog post please see:
